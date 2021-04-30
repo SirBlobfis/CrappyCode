@@ -3,6 +3,7 @@ import keyboard
 import random
 import numpy
 import array
+import curses
 
 """
 Made by SirBlobfis
@@ -95,8 +96,8 @@ Jiff = [
     ]
 
 Jaff = [
-    ["⬛", "⬛", "⬛", "⬛"],
-    ["⬛", "⬛", "⬛", "⬛"]
+    ["3", "3", "3", "3"],
+    ["3", "3", "3", "3"]
     ]
 
 #0
@@ -153,7 +154,7 @@ def choose():
     piece = rand
     rand = random.randrange(0, 7)
 
-def averageTheCrap():
+def averageTheCrap(stdscr):
     global a, b, c
     a += 1
     if(a == 59):
@@ -163,16 +164,16 @@ def averageTheCrap():
     for o in range(len(b)):
         c += b[o]
     c = c/60
-    print("avg frame time:" + str(round(c, 4)))
-    print("max frame time:" + str(round(1/60, 4)))
+    stdscr.addstr("avg frame time:" + str(round(c, 4)))
+    stdscr.addstr("max frame time:" + str(round(1/60, 4)))
 
-def getMaxCrap():
+def getMaxCrap(stdscr):
     global b, e
     e = 0
     for i in range(len(b)):
         if(b[i] > e):
             e = b[i]
-    print("max time frame:" + str(round(e, 4)))
+    stdscr.addstr("max time frame:" + str(round(e, 4)))
 
 def piece_shape():
     global current_shape
@@ -216,7 +217,7 @@ def piece_shape():
     else:
         print(failure)
 
-def check_collisions(DLR):
+def check_collisions(DLR, stdscr):
     global move_clear, Piece_location, current_shape_center
     checkers = []
     ah = 0
@@ -254,9 +255,9 @@ def check_collisions(DLR):
                         ah = 0
                         break
             for e in range(len(current_shape)):
-                print(checkers)
-                print(Piece_location[0] + e - current_shape_center[0])
-                print(Piece_location[1] + checkers[e] - current_shape_center[1])
+                #stdscr.addstr(checkers)
+                #stdscr.addstr(Piece_location[0] + e - current_shape_center[0])
+                #stdscr.addstr(Piece_location[1] + checkers[e] - current_shape_center[1])
                 if((Jeff[Piece_location[0] + e - current_shape_center[0]][Piece_location[1] + checkers[e] - current_shape_center[1] - 1] == 0) and ran == False):
                     move_clear = True
                 else:
@@ -277,7 +278,7 @@ def check_collisions(DLR):
                         checkers.append(ah)
                         ah = 0
                         break
-            print(checkers)
+            #stdscr.addstr(checkers)
             for e in range(len(current_shape)):
                 #print(Piece_location[0] + e - current_shape_center[0])
                 #print(Piece_location[1] - checkers[e] - current_shape_center[1] + len(current_shape[0]))
@@ -295,7 +296,7 @@ def check_collisions(DLR):
 
 def check_lose():
     if(Jeff[0] != d):
-        print("YOU LOSE")
+        stdscr.addstr("YOU LOSE")
         quit()
 
 def place_piece():
@@ -337,13 +338,13 @@ def new_piece():
     choose()
     piece_shape()
 
-def move_down():
+def move_down(stdscr):
     global Piece_location, down_delay, move_clear, down
     down_delay += 1
     if(down_delay >= moveDownDelay):
         unplace_piece()
         down_delay = 0
-        check_collisions(0)
+        check_collisions(0, stdscr)
         if(move_clear == True):
             Piece_location[0] += 1
         else:
@@ -354,17 +355,17 @@ def move_down():
             new_piece()
         place_piece()
 
-def move_left():
+def move_left(stdscr):
     if(left == True):
-        check_collisions(1)
+        check_collisions(1, stdscr)
         if(move_clear == True):
             unplace_piece()
             Piece_location[1] -= 1
             place_piece()
 
-def move_right():
+def move_right(stdscr):
     if(right == True):
-        check_collisions(2)
+        check_collisions(2, stdscr)
         if(move_clear == True):
             unplace_piece()
             Piece_location[1] += 1
@@ -479,15 +480,15 @@ def down_speed():
     else:
         moveDownDelay = 10
 
-def preview_piece():
+def preview_piece(stdscr):
     global rand, piece_preview, Jaff, piece_preview_
     piece_preview_ = [
         ["0", "0", "0", "0"],
         ["0", "0", "0", "0"]
         ]
     Jaff = [
-        ["⬛", "⬛", "⬛", "⬛"],
-        ["⬛", "⬛", "⬛", "⬛"]
+        ["3", "3", "3", "3"],
+        ["3", "3", "3", "3"]
         ]
     if(rand == 0):
         piece_preview = []
@@ -519,65 +520,81 @@ def preview_piece():
             piece_preview_[o][e] = str(piece_preview[o][e])
             #print(piece_preview_)
             if(piece_preview_[o][e] == "1"):
-                Jaff[o][e] = "⬜"
+                Jaff[o][e] = "2"
     for o in range(len(piece_preview)):
-        print(Jaff[o][0] + Jaff[o][1] + Jaff[o][2] + Jaff[o][3])
+        stdscr.addstr(Jaff[o][0] + Jaff[o][1] + Jaff[o][2] + Jaff[o][3])
     #print(Jaff)
 
 
-choose()
-new_piece()
-place_piece()
 
-Debbie = time.time()
 
-while True:
-    Debbie_index += 1/60
+def main(stdscr):
+    global Piece, crappy_fps, avg_crap, a, b, c, d, e, lines, lines_cleared, moveDownDelay, down_delay, down_delay, rand, Piece_location, move_clear, rotation, last_time, Debbie_index, Debbie, current_shape, current_shape_center, piece_preview, piece_preview_
+    stdscr.clear()
+    stdscr.refresh()
 
-    for i in range(5):
-        print(" ")
-    #print(str(Piece) + str(int(100000 * (time.time() - Debbie))))
-    #print(piece)
-    #print(Piece_location)
-    #print(move_clear)
+    curses.start_color()
+    curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_WHITE)
+    curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_BLACK)
     
-    check_buttons()
-    move_left()
-    move_right()
-    rotate()
-    move_down()
-    rotate_bandaid()
-    down_speed()
-    preview_piece()
+    choose()
+    new_piece()
+    place_piece()
+    Debbie = time.time()
 
-    for e in range(20):
-        for u in range(10):
-            Jiff[e][u] = str(Jeff[e][u])
-            if(Jeff[e][u] == 0):
-                Jiff[e][u] = str(Jiff[e][u].replace("0", "⬛"))
-            elif(Jeff[e][u] == 1):
-                Jiff[e][u] = str(Jiff[e][u].replace("1", "⬜"))
-            else:
-                print(failure)
-        print(str(Jiff[e][0]) + str(Jiff[e][1]) + str(Jiff[e][2]) + str(Jiff[e][3]) + str(Jiff[e][4]) + str(Jiff[e][5]) + str(Jiff[e][6]) + str(Jiff[e][7]) + str(Jiff[e][8]) + str(Jiff[e][9]))
+    while True:
+        Debbie_index += 1/60
+        #print(str(Piece) + str(int(100000 * (time.time() - Debbie))))
+        #print(piece)
+        #print(Piece_location)
+        #print(move_clear)
+        
+        check_buttons()
+        move_left(stdscr)
+        move_right(stdscr)
+        rotate()
+        move_down(stdscr)
+        rotate_bandaid()
+        down_speed()
+        preview_piece(stdscr)
 
-    try:
-        if keyboard.is_pressed('esc'):
+        for e in range(20):
+            for u in range(10):
+                Jiff[e][u] = str(Jeff[e][u])
+                if(Jeff[e][u] == 0):
+                    Jiff[e][u] = str(Jiff[e][u].replace("0", "3"))
+                elif(Jeff[e][u] == 1):
+                    Jiff[e][u] = str(Jiff[e][u].replace("1", "2"))
+                else:
+                    print(failure)
+                stdscr.addstr(str(Jiff[e][u]), curses.color_pair(int(Jiff[e][u])))
+                stdscr.addstr(str(Jiff[e][u]), curses.color_pair(int(Jiff[e][u])))
+                index = curses.getsyx()
+                curses.setsyx((index[1] + 1), 0)
+            stdscr.addstr("                    ")
+
+        try:
+            if keyboard.is_pressed('esc'):
+                break
+        except:
             break
-    except:
-        break
 
-    #averageTheCrap()
-    #getMaxCrap()
-    #print(1/60 - (time.time() - Debbie - Debbie_index))
-    #print(Debbie_index)
-    
-    #print(1/60)
-    #print(time.time() - Debbie - Debbie_index)
-    #print(time.time() % 1/60)
+        #averageTheCrap(stdscr)
+        #getMaxCrap(stdscr)
+        #print(1/60 - (time.time() - Debbie - Debbie_index))
+        #print(Debbie_index)
+        
+        #print(1/60)
+        #print(time.time() - Debbie - Debbie_index)
+        #print(time.time() % 1/60)
 
-    last_time = time.time()
-    if((1/60 - (time.time() - Debbie - Debbie_index)) > 0):
-        time.sleep(1/60 - (time.time() - Debbie - Debbie_index))
-    #if((time.sleep(1/60 - (time.time() % 1/60))) > .01):
-    #    time.sleep(.005)
+        last_time = time.time()
+        if((1/60 - (time.time() - Debbie - Debbie_index)) > 0):
+            time.sleep(1/60 - (time.time() - Debbie - Debbie_index))
+        #if((time.sleep(1/60 - (time.time() % 1/60))) > .01):
+        #    time.sleep(.005)
+        stdscr.refresh()
+        #curses.setsyx(1, 1)
+        stdscr.clear()
+
+curses.wrapper(main)

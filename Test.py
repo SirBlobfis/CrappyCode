@@ -1,10 +1,4 @@
-import math
-camera = [2, 2, 2]
-cameraPoint = [2.7071, 2.7071, 2]
-
-point = [1, 1, 2]
-
-
+print ("hello world")
 
 
 

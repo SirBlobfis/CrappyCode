@@ -1,6 +1,51 @@
-print ("hello world")
+"""
+#factorial part from Grapher
+dirty = dirty + "$" #used to prevent the split from being at the absolute end of the string
+        dirty = dirty.split("!", 1)
+        dirty[0] = dirty[0] + "$"
+        dirty[0] = dirty[0][::-1] #reverse order
 
-
+        for a in range(len(dirty[0])): #check each character of dirty
+            if dirty[0][a] in checkOperands: #if the factorial-ed thing is a number or variable without any power
+                operand = dirty[0][a]
+                dirty[0] = dirty[0].split(operand, 1)
+                dirty[0][0] = ")" + dirty[0][0] + "(lairotcaf.htam" #"math.factorial(" backwards
+                dirty[0] = dirty[0][0] + operand + dirty[0][1] #un-split and add back in the operand
+                break
+            elif dirty[0][a] in checkParentheses:
+                for e in range(len(dirty[0])):
+                    if dirty[0][e] == ")":
+                        dirty[0] = dirty[0].replace(")", "}", 1)
+                    elif dirty[0][e] == "(":
+                        dirty[0] = dirty[0].replace("(", "{", 1)
+                    elif(dirty[0].count("{") == dirty[0].count("}") and dirty[0].count("{") != 0):
+                        dirty[0] = dirty[0] + "$"
+                        dirty[0] = dirty[0][::-1] #unflip
+                        print(dirty)
+                        dirty[0] = dirty[0].split("{", 1)
+                        print(dirty)
+                        dirty[0] = dirty[0][0] + "math.factorial{" + dirty[0][1]
+                        dirty[0] = dirty[0].replace("{", "(")
+                        dirty[0] = dirty[0].replace("}", ")")
+                        dirty[0] = dirty[0][::-1] #reflip
+                        break
+                if(dirty[0].count("{") == dirty[0].count("}") and dirty[0].count("{") != 0):
+                    dirty[0] = dirty[0] + "$"
+                    dirty[0] = dirty[0][::-1] #unflip
+                    print(dirty)
+                    dirty[0] = dirty[0].split("{", 1)
+                    print(dirty)
+                    dirty[0] = dirty[0][0] + "math.factorial{" + dirty[0][1]
+                    dirty[0] = dirty[0].replace("{", "(")
+                    dirty[0] = dirty[0].replace("}", ")")
+                    dirty[0] = dirty[0][::-1] #reflip
+                break
+            if a == len(dirty[0]) - 1: #if it is at the end character
+                dirty[0] = ")" + dirty[0] + "(lairotcaf.htam" #"math.factorial(" backwards
+        dirty[0] = str(dirty[0][::-1]) #reverse order (back to right way)
+        dirty = dirty[0] + dirty[1]
+        dirty = dirty.replace("$", "") #remove the PESKY temporary space
+"""
 
 
 

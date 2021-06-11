@@ -1,6 +1,7 @@
 import time
 import triangles
 import keyboard
+import math
 
 triangles = triangles.triangles
 
@@ -14,7 +15,12 @@ cameraCenter = [round(cameraSize/2) - 1, round(cameraSize/2) - 1]
 cameraPlane = []
 cameraDirection = [0, 0]
 
+magicFovScalar = 50
+
 cameraMoveAmount = .1
+cameraTurnAmount = .01
+
+keys = ["a", "s", "d", "w", "f", "g", "h", "t", "q", "shift", " "]
 
 def zeroTriangles():
     global trianglesAsSlopes, trianglesOnPlane
@@ -34,7 +40,6 @@ def createCamera():
         cameraPlane.append([])
         for _ in range(cameraSize):
             cameraPlane[a].append(" ")
-    #print(cameraPlane)
 
 def slopes(pointA, pointB): #points are arrays of x, y, z
     try:
@@ -52,9 +57,15 @@ def trianglesToSlopes():
     for a in range(len(triangles)):
         for e in range(3):
             triSlopes = slopes(triangles[a][e], cameraPoint)
-            #print("triSlopes: " + str(triSlopes))
             trianglesAsSlopes[a][e][0] = triSlopes[0]
             trianglesAsSlopes[a][e][1] = triSlopes[1]
+
+def triSlopesTurnAdjust():      #changes all of the slopes to the difference of themselves and the camera slope
+    global trianglesAsSlopes    #effectively makes the camera direction the new "zero" for the slopes
+    for a in range(len(triangles)):
+        for e in range(3):
+            trianglesAsSlopes[a][e][0] = math.tan(math.atan(trianglesAsSlopes[a][e][0]) - (cameraDirection[0]))
+            trianglesAsSlopes[a][e][1] = math.tan(math.atan(trianglesAsSlopes[a][e][1]) - (cameraDirection[1]))
 
 def triSlopesToPlane():
     global trianglesOnPlane
@@ -68,7 +79,7 @@ def raster():
     for a in range(cameraSize):
         for e in range(cameraSize):
             for i in range(len(trianglesOnPlane)):
-                if pointInTriangle(trianglesOnPlane[i], [(a - cameraCenter[0])/25, (e - cameraCenter[1])/25]):
+                if pointInTriangle(trianglesOnPlane[i], [(a - cameraCenter[0])/magicFovScalar, (e - cameraCenter[1])/magicFovScalar]):
                     cameraPlane[a][e] = triangles[i][3]
 
 def pointInTriangle(triangle, point): #trinagle - 3 points x, y, z; point - x, y, z
@@ -99,46 +110,46 @@ if __name__ == "__main__":
         #print(trianglesAsSlopes)
         createCamera()
         trianglesToSlopes()
+        triSlopesTurnAdjust()
         triSlopesToPlane()
         raster()
         #print(triangles)
-        #print(trianglesAsSlopes)
-        #print(trianglesOnPlane)
+        print(trianglesAsSlopes)
+        print(trianglesOnPlane)
         #print(cameraPlane)
         print(cleanCameraOutput())
-        time.sleep(.5)
+        time.sleep(0)
         key = ""
-        try:
-            if(keyboard.is_pressed('a')):
-                key = "a"
-        except:
-            pass
-        try:
-            if(keyboard.is_pressed('d')):
-                key = "d"
-        except:
-            pass
-        try:
-            if(keyboard.is_pressed('s')):
-                key = "s"
-        except:
-            pass
-        try:
-            if(keyboard.is_pressed('w')):
-                key = "w"
-        except:
-            pass
-        try:
-            if(keyboard.is_pressed('q')):
-                key = "q"
-        except:
-            pass
+        
+        for i in range(len(keys)):
+            try:
+                if(keyboard.is_pressed(keys[i])):
+                    key = str(keys[i])
+            except:
+                pass
+        
         print(key)
         if key == "a":
-            cameraPoint[1] += cameraMoveAmount
+            cameraPoint[0] -= cameraMoveAmount * math.sin(cameraDirection[0])
+            cameraPoint[1] += cameraMoveAmount * math.cos(cameraDirection[0])
         if key == "d":
-            cameraPoint[1] -= cameraMoveAmount
+            cameraPoint[0] += cameraMoveAmount * math.sin(cameraDirection[0])
+            cameraPoint[1] -= cameraMoveAmount * math.cos(cameraDirection[0])
         if key == "w":
-            cameraPoint[2] += cameraMoveAmount
+            cameraPoint[0] += cameraMoveAmount * math.cos(cameraDirection[0])
+            cameraPoint[1] += cameraMoveAmount * math.sin(cameraDirection[0])
         if key == "s":
+            cameraPoint[0] -= cameraMoveAmount * math.cos(cameraDirection[0])
+            cameraPoint[1] -= cameraMoveAmount * math.sin(cameraDirection[0])
+        if key == "f":
+            cameraDirection[0] += cameraTurnAmount
+        if key == "h":
+            cameraDirection[0] -= cameraTurnAmount
+        if key == "t":
+            cameraDirection[1] += cameraTurnAmount
+        if key == "g":
+            cameraDirection[1] -= cameraTurnAmount
+        if key == " ":
+            cameraPoint[2] += cameraMoveAmount
+        if key == "shift":
             cameraPoint[2] -= cameraMoveAmount

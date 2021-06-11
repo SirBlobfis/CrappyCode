@@ -1,0 +1,5 @@
+---Syntax---
+{}, [], and () all acceptable and equivalent
+help = print this message
+
+log = log base 10

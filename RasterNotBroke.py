@@ -80,7 +80,7 @@ def triangleProject(): #take "trianglesAsAngles" and give "screenTriangles"
             screenTriangles.append([])
             screenTriangles[len(screenTriangles) - 1] = [[], [], []]
             for i in range(3):
-                print("BBBBB" + str(math.degrees(math.tan(math.radians(trianglesAsAngles[a][i][0])))))
+                #print("BBBBB" + str(math.degrees(math.tan(math.radians(trianglesAsAngles[a][i][0])))))
                 screenTriangles[len(screenTriangles) - 1][i].append(math.degrees(math.tan(math.radians(trianglesAsAngles[a][i][0]))))
                 screenTriangles[len(screenTriangles) - 1][i].append(math.degrees(math.tan(math.radians(trianglesAsAngles[a][i][1]))))
 
@@ -113,7 +113,8 @@ def rasterify():
     for a in range(screenX):
         for e in range(screenY):
             for i in range(len(screenTriangles)):
-                screen[a][e] = pointInTri(screenTriangles[i], [a, e])
+                if(screen[a][e] != "."):
+                    screen[a][e] = pointInTri(screenTriangles[i], [a, e])
 
 if __name__ == "__main__":
     buildScreen()
